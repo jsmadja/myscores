@@ -1,0 +1,57 @@
+@(game: models.Game = null, page: String = null)
+@import play.i18n._
+
+
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Hiscores</a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li style="border-left: solid 1px #e7e7e7;" class="@if(page == "score"){active}">
+                    @if(actions.User.current.isAuthenticated) {
+                        @if(game == null) {
+                            <a href="@routes.ScoreController.selectGame"><span class="glyphicon glyphicon-plus"></span> @Messages.get("Score")</a>
+                        } else {
+                            <a href="@routes.ScoreController.fillFormWithGame(game)"><span class="glyphicon glyphicon-plus"></span> @Messages.get("Score")</a>
+                        }
+                    }
+                </li>
+
+                <li class="@if(page == "games"){active}">
+                    <a href="@routes.GamesController.index"><span class="glyphicon glyphicon-th-list"></span> @Messages.get("Games")</a>
+                </li>
+                <li class="@if(page == "players"){active}">
+                    <a href="@routes.PlayersController.index"><span class="glyphicon glyphicon-user"></span> @Messages.get("Players")</a></li>
+                <li class="@if(page == "versus"){active}">
+                    <a href="@routes.VersusController.indexChooseVersus(actions.User.current)"><span class="glyphicon glyphicon-transfer"></span> Versus</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="@if(page == "stats"){active}"><a href="@routes.StatsController.index" style="border-left: solid 1px #e7e7e7;"><span class="glyphicon glyphicon-stats"></span> @Messages.get("Stats")</a></li>
+                @if(actions.User.current.canImportScores) {
+                    <li class="@if(page == "new_game"){active}">
+                        <a href="@routes.GameController.create"><span class="glyphicon glyphicon-th-large"></span> @Messages.get("AddGame")</a></li>
+                }
+                <li><a href="http://www.shmup.com/index.php?page=doss/Hiscores/hiscores_tuto" target="_blank"><span class="glyphicon glyphicon-question-sign"></span> @Messages.get("Help")</a></li>
+                <li>
+                    @if(actions.User.current.isAuthenticated) {
+                        <a href="@routes.PlayerController.index(actions.User.current)" style="border-left: solid 1px #e7e7e7;"><span class="glyphicon glyphicon-user"></span> @actions.User.current.name</a>
+                    } else {
+                        <a href="http://forum.shmup.com/ucp.php?mode=login" id="account" data-container="body" data-trigger="hover" data-toggle="popover" data-placement="left" data-content="@Messages.get("LogonHelp")" data-original-title="" title="" >@Messages.get("Logon")</a>
+                        <script>$('#account').popover('hide');</script>
+                    }
+                </li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>

@@ -1,0 +1,83 @@
+@(score: models.Score)
+@main() {
+    <h2>Ajoutez votre score sur shmup.com</h2>
+
+    <h3>Etape 1</h3>
+    <p>
+        Copiez le texte ci-dessous
+    </p>
+    <div id="forum">
+        <div class="alert" style="background-color: #F0F3F4">
+            @if(score.mode != null) {
+                <p>
+                    Mode: [b]@score.mode.name [/b]
+                </p>
+            }
+            <p>
+                Score: [b][color=#0000FF]@score.formattedValue @if(!score.isTimeScore) { points } [/color][/b]
+            </p>
+            @if(score.stage != null) {
+                <p>
+                    Stage: [b][color=#BF4000]@score.stage.name [/color][/b]
+                </p>
+            }
+            @if(score.difficulty != null) {
+                <p>
+                    Difficulté: [b]@score.difficulty.name [/b]
+                </p>
+            }
+            @if(score.ship != null) {
+                <p>
+                    Vaisseau: [b]@score.ship.name [/b]
+                </p>
+            }
+            <p>
+                Support: [b]@score.platform.name [/b]
+            </p>
+            <p>
+                Position : [b]@score.formattedRankInFrench @if(score.progression != null && score.progression > 0){(+@score.progression)} [/b]
+            </p>
+            @if(score.comment) {
+                <p>
+                    Commentaire: [b]@score.comment [/b]
+                </p>
+            }
+
+            @if(score.photo) {
+                <p>
+                    <br/>
+                    [img]@score.photo [/img]
+                </p>
+            }
+            @if(score.decorator.replay) {
+                <p>
+                    <br/>
+                    @score.decorator.replay
+                </p>
+            }
+            <p>
+                <br/>
+                [size=85]Message généré depuis [url=http://hiscores.shmup.com]hiscores.shmup.com[/url].[/size]
+                <br/>
+                _______________________________________________
+            </p>
+        </div>
+    </div>
+
+    <h3>Etape 2</h3>
+
+    <p>
+        Cliquez sur l'image pour accéder directement au formulaire de saisie du topic de <b><a href="@score.game.post">@score.game</a></b> et coller le message sélectionné à l'étape 1.
+    </p>
+
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <a href="@score.game.post" class="thumbnail">
+                <img src="@routes.Assets.at("images/shmup.png")" />
+            </a>
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+
+}

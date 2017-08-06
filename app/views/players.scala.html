@@ -1,0 +1,56 @@
+@(players: List[models.Player])
+@import play.i18n._
+@main(page = "players") {
+   <h2>@Messages.get("players.scala.html.playerlist")</h2>
+    <table id="players">
+       <thead>
+           <th>@Messages.get("Players")</th>
+           <th>1st</th>
+           <th>2nd</th>
+           <th>3rd</th>
+           <th>1CC</th>
+           <th>Scores</th>
+       </thead>
+       @for(player <- players) {
+            <tr class="@if(player.equals(actions.User.current())){me}">
+                <td>
+                    <a href="@routes.PlayerController.index(player)" class="dead">@player.name</a>
+                </td>
+                <td style="text-align : right ; ">
+                @player.getCounts.firstRankCount
+                </td>
+                <td style="text-align : right ; ">
+                @player.getCounts.secondRankCount
+                </td>
+                <td style="text-align : right ; ">
+                @player.getCounts.thirdRankCount
+                </td>
+                <td style="text-align : right ; ">
+                @player.getCounts.oneCreditCount
+                </td>
+                <td style="text-align : right ; ">
+                @player.scores.size
+                </td>
+            </tr>
+       }
+   </table>
+
+    <script>
+        $(document).ready(function() {
+            $('#players').dataTable({
+                "bJQueryUI": true,
+                "sDom": "<'row dataTables_utils'<'col-md-6'l><'col-md-6'f>r>t<'row dataTables_utils'<'col-md-6'i><'col-md-6'p>>",
+                "bPaginate": false,
+                "bLengthChange": false,
+                "bInfo": false,
+                "aaSorting": [ [1,'desc'], [2,'desc'], [3, 'desc'],  [4, 'desc'], [5, 'desc'] ],
+                "aoColumnDefs": [
+                { "asSorting": [ "desc" ], "aTargets": [ 1 ] },
+                { "asSorting": [ "desc"], "aTargets": [ 2 ] },
+                { "asSorting": [ "desc" ], "aTargets": [ 3 ] },
+                { "asSorting": [ "desc" ], "aTargets": [ 4 ] }
+                ]
+            });
+        } );
+    </script>
+}

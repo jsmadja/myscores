@@ -1,0 +1,150 @@
+@(game: models.Game, scoreForm: Form[models.Score])
+@import play.i18n._
+@main(page = "score") {
+    <h2 class="title">
+        <img src="@game.cover" alt="@game.title" class="pull-left thumbnail" width="150px" style="margin-right: 20px;" />
+        <a href="@routes.GameController.index(game)">@game.title</a>
+
+        <p>
+            <a href="@game.thread" class="btn btn-default btn-lg btn-xs">
+                <span class="glyphicon glyphicon-share-alt"></span> forum
+            </a>
+            <a href="@routes.RankingController.index(game)" target="_blank" class="btn btn-default btn-lg btn-xs">
+                <span class="glyphicon glyphicon-list-alt"></span> ranking
+            </a>
+        </p>
+    </h2>
+
+    <div style="clear: both;"/>
+
+    <form role="form" method="POST" action="@routes.ScoreController.save" enctype='multipart/form-data'>
+        <input type="hidden" name="gameId" value="@game.id" />
+        @if(scoreForm.hasGlobalErrors) {
+            <p class="alert alert-danger">
+            @scoreForm.globalError.message
+            </p>
+        }
+        <div class="row">
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label for="value">@Messages.get("Score") (pts)</label>
+                    <input type="text" class="form-control" name="value" placeholder="123456">
+                </div>
+            </div>
+            @if(game.hasTimerScores) {
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="minutes">Minutes</label>
+                        <input type="number" maxlength="2" size="2" min="0" max="59" class="form-control" name="minutes" placeholder="12mn">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="seconds">Secondes</label>
+                        <input type="number" maxlength="2" size="2" min="0" max="59" class="form-control" name="seconds" placeholder="34s">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="seconds">10èmes de seconde</label>
+                        <input type="number" maxlength="2" size="2" min="0" max="99"  class="form-control" name="milliseconds" placeholder="56">
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label for="platform">@Messages.get("Platform")</label>
+                    <select name="platform" class="form-control">
+                    @for(platform <- game.platforms) {
+                        <option value="@platform.id">@platform.name.toUpperCase</option>
+                    }
+                    </select>
+                </div>
+            </div>
+            @if(game.hasDifficulties) {
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="difficulty">@Messages.get("Difficulty")</label>
+                        <select name="difficulty" class="form-control">
+                        @for(difficulty <- game.difficulties) {
+                            <option value="@difficulty.id">@difficulty.name.toUpperCase</option>
+                        }
+                        </select>
+                    </div>
+                </div>
+            }
+            @if(game.hasModes) {
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="mode">@Messages.get("Mode")</label>
+                        <select name="mode" class="form-control">
+                        @for(mode <- game.modes) {
+                            <option value="@mode.id">@mode.name</option>
+                        }
+                        </select>
+                    </div>
+                </div>
+            }
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="stage">@Messages.get("Stage")</label>
+                    <select name="stage" class="form-control">
+                    @for(stage <- game.stages) {
+                        <option value="@stage.id">@stage.name</option>
+                    }
+                    </select>
+                </div>
+            </div>
+            @if(game.hasShip) {
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="ship">@Messages.get("Ship")</label>
+                        <select name="ship" class="form-control">
+                        @for(ship <- game.ships) {
+                            <option value="@ship.id">@ship.name</option>
+                        }
+                        </select>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="photo">@Messages.get("Photo")</label>
+                    <span class="btn btn-primary btn-default btn-file form-control" style="text-align: left;">
+                        Ajouter une photo <input type="file" name="photo">
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="inp">@Messages.get("Inp")</label>
+                    <span class="btn btn-success btn-default btn-file form-control" style="text-align: left;">
+                        Ajouter un INP <input type="file" name="inp">
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="replay">@Messages.get("Replay")</label>
+                    <input type="url" class="form-control" name="replay" placeholder="@Messages.get("scoreform.scala.html.replay.placeholder")">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="comment">@Messages.get("Comment")</label>
+                    <textarea name="comment" class="form-control" rows="5"></textarea>
+                </div>
+            </div>
+        </div>
+        @if(actions.User.current.isAuthenticated) {
+            <button type="submit" class="btn btn-success">@Messages.get("Submit")</button>
+        }
+    </form>
+
+}

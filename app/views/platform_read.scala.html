@@ -1,0 +1,26 @@
+@(platformName: String, games: List[models.Game])
+@import play.i18n._
+@main() {
+
+   <h2>@platformName.toUpperCase</h2>
+
+   <table id="games" class="table table-condensed table-hover table-striped table-bordered">
+       <tr>
+           <th>@Messages.get("Games")</th>
+           <th>@Messages.get("Platforms")</th>
+       </tr>
+       @for(game <- games.sortBy(_.title)) {
+        <tr>
+            <td>
+                <a href="@routes.GameController.indexWithName(game, game.getEscapedTitle)">@game.title</a>
+            </td>
+            <td style="vertical-align: middle;">
+                @for(platform <- game.platforms) {
+                    <span class="label label-success"><a class="platform" href="@routes.PlatformController.read(platform.name.toUpperCase)">@platform.name.toUpperCase</a></span>
+                }
+            </td>
+        </tr>
+       }
+   </table>
+
+}

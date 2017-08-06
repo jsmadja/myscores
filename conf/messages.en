@@ -1,0 +1,49 @@
+Menu=Menu
+Stats=Statistics
+Help=Help
+Player=Player
+players=players
+Players=Players
+Game=Game
+Games=Games
+games=games
+Platform=Platform
+Platforms=Plateforms
+Difficulty=Difficulty
+Mode=Mode
+Stage=Stage
+Score=Score
+Scores=Scores
+scores=scores
+Rank=Rank
+Photo=Photo
+Precisions=Comment
+Comment=Comment
+Update=Update
+Submit=Submit
+AddScore=Add a score
+SelectGame=Select Game
+AverageScore=Average Score
+GeomAverageScore=Average Score (Geom)
+PlayerCount=Player Count
+Logon=Log In
+LogonHelp=You must authenticate on shmup.com
+
+games.scala.html.gamelist=Game List
+players.scala.html.playerlist=Player List
+scoreform.scala.html.photo.placeholder=Direct Link (hosts: casimages, imageshack, ...)
+Replay=Replay
+scoreform.scala.html.replay.placeholder=Direct Link (hosts: Youtube, Dailymotion, ...)
+
+GeneralRanking=General Ranking
+
+Gap=Gap
+GapWithPreviousScore=Gap
+
+NotVip=You're not VIP, your features are restricted. You can ask for a VIP account <a href="http://forum.shmup.com">here</a>
+
+AddGame=New Game
+
+Delete=Delete
+
+Ship=Ship
