@@ -12,4 +12,4 @@ COPY build.sbt ./
 RUN play help
 COPY ./ ./
 
-CMD ["play", "start -Dshmup.password=xedy4bsa -Dhttp.port=9001"]
+CMD ["play", "start -Dhttp.port=9001"]
