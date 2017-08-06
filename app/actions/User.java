@@ -4,12 +4,10 @@ import models.Player;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.MDC;
 import play.Logger;
-import play.Play;
 import play.libs.F;
 import play.mvc.Action;
 import play.mvc.Http;
 import play.mvc.SimpleResult;
-import plugins.ShmupClient;
 
 import java.lang.reflect.Method;
 
@@ -28,24 +26,8 @@ public class User extends Action.Simple {
 
     private static Player getPlayerFromCookie(Http.Context context) {
         Long shmupUserId;
-        if (Play.isDev()) {
-            shmupUserId = 33489L;
-        } else {
-            Http.Cookie userId = context.request().cookie("phpbb3_axtcz_u");
-            if (userId == null || userId.value().equals("1")) {
-                return Player.guest;
-            }
-            shmupUserId = Long.parseLong(userId.value());
-        }
-        Player player = Player.findByShmupUserId(shmupUserId);
-        if (player == null) {
-            ShmupClient shmupClient = new ShmupClient();
-            String login = shmupClient.getLoginById(shmupUserId);
-            player = Player.findOrCreatePlayer(login);
-            player.shmupUserId = shmupUserId;
-            player.update();
-        }
-        return player;
+        shmupUserId = 33489L;
+        return Player.findByShmupUserId(shmupUserId);
     }
 
     @Override
