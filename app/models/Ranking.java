@@ -3,7 +3,6 @@ package models;
 import actions.User;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
-import formatters.ScoreFormatter;
 
 import javax.annotation.Nullable;
 import javax.persistence.Transient;
@@ -80,23 +79,6 @@ public class Ranking {
         return Joiner.on(",").join(getSplittedScores());
     }
 
-    public int averageScoreIndex() {
-        BigDecimal averageScore = averageScoreAsBigDecimal();
-        return getSplittedScores().indexOf(averageScore);
-    }
-
-    public int playerScoreIndex() {
-        Player player = User.current();
-        if (player.isAuthenticated()) {
-            for (Score score : scores) {
-                if (score.isPlayedBy(player)) {
-                    return getSplittedScores().indexOf(score.value);
-                }
-            }
-        }
-        return Integer.MAX_VALUE;
-    }
-
     private List<BigDecimal> scoresWithAverageScore() {
         List<BigDecimal> scores = newArrayList(transform(this.scores, new Function<Score, BigDecimal>() {
             @Nullable
@@ -105,8 +87,6 @@ public class Ranking {
                 return score.value;
             }
         }));
-        scores.add(averageScoreAsBigDecimal());
-        scores.add(geomAverageScoreAsBigDecimal());
         Collections.sort(scores);
         return scores;
     }
@@ -126,8 +106,6 @@ public class Ranking {
         }
         scoreCategories.add(max);
         TreeSet<BigDecimal> longs = new TreeSet<BigDecimal>(scoreCategories);
-        longs.add(averageScoreAsBigDecimal());
-        longs.add(geomAverageScoreAsBigDecimal());
 
         Player current = User.current();
         for (Score score : scores) {
@@ -140,48 +118,6 @@ public class Ranking {
         return new ArrayList<BigDecimal>(longs);
     }
 
-    public String averageScore() {
-        return ScoreFormatter.format(averageScoreAsBigDecimal());
-    }
-
-    public String geomAverageScore() {
-        return ScoreFormatter.format(geomAverageScoreAsBigDecimal());
-    }
-
-    public int geomAverageScoreIndex() {
-        BigDecimal averageScore = geomAverageScoreAsBigDecimal();
-        return getSplittedScores().indexOf(averageScore);
-    }
-
-    private BigDecimal averageScoreAsBigDecimal() {
-        BigDecimal sum = BigDecimal.ZERO;
-        for (Score score : scores) {
-            sum = sum.add(score.value);
-        }
-        if (sum.longValue() == 0L) {
-            return BigDecimal.ZERO;
-        }
-        return sum.divide(BigDecimal.valueOf(scores.size()), HALF_UP);
-    }
-
-    private BigDecimal geomAverageScoreAsBigDecimal() {
-        BigDecimal GM_log = BigDecimal.ZERO;
-        for (Score score : scores) {
-            if (score.value.equals(BigDecimal.ZERO)) {
-                return BigDecimal.ZERO;
-            }
-            try {
-                GM_log = GM_log.add(BigDecimal.valueOf(Math.log(score.value.doubleValue())));
-            } catch (Exception e) {
-// invalid score
-            }
-        }
-        BigDecimal divisor = BigDecimal.valueOf(scores.size());
-        BigDecimal divide = GM_log.divide(divisor, HALF_UP);
-        double a = divide.doubleValue();
-        return BigDecimal.valueOf((long) Math.exp(a));
-    }
-
     public String uniqueKey() {
         String difficultyId = "";
         if (difficulty != null) {
@@ -192,9 +128,5 @@ public class Ranking {
             modeId = mode.id.toString();
         }
         return difficultyId + "_" + modeId;
-    }
-
-    public boolean isNotEmpty() {
-        return !this.scores.isEmpty();
     }
 }

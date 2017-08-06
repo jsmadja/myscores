@@ -96,10 +96,6 @@ public class Score extends BaseModel<Score> implements Comparable<Score> {
         return getCreatedSince();
     }
 
-    public String formattedDateInFrench() {
-        return getCreatedSinceInFrench();
-    }
-
     public String formattedValue() {
         if (mode != null && mode.isTimerScore()) {
             return ScoreFormatter.formatAsTime(value);
@@ -178,7 +174,7 @@ public class Score extends BaseModel<Score> implements Comparable<Score> {
         return hasDifficulty(score.difficulty) && hasMode(score.mode) && hasGame(score.game);
     }
 
-    public boolean hasDifficulty(Difficulty difficulty) {
+    private boolean hasDifficulty(Difficulty difficulty) {
         if (difficulty == null && this.difficulty == null) {
             return true;
         }
@@ -195,7 +191,7 @@ public class Score extends BaseModel<Score> implements Comparable<Score> {
         return this.game.equals(game);
     }
 
-    public boolean hasMode(Mode mode) {
+    private boolean hasMode(Mode mode) {
         if (mode == null && this.mode == null) {
             return true;
         }
@@ -209,10 +205,7 @@ public class Score extends BaseModel<Score> implements Comparable<Score> {
     }
 
     public boolean isPlayedBy(Player player) {
-        if (player == null) {
-            return false;
-        }
-        return this.player.equals(player);
+        return player != null && this.player.equals(player);
     }
 
     public String getGameTitle() {
@@ -226,15 +219,15 @@ public class Score extends BaseModel<Score> implements Comparable<Score> {
         return title;
     }
 
-    public void updateRank(Integer rank) {
+    void updateRank(Integer rank) {
         this.rank = rank;
     }
 
-    public String difficultyName() {
+    String difficultyName() {
         return difficulty == null ? "" : difficulty.name;
     }
 
-    public String modeName() {
+    String modeName() {
         return mode == null ? "" : mode.name;
     }
 

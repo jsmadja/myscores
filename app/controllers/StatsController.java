@@ -23,7 +23,7 @@ public class StatsController extends Controller {
 
     public static String scoresPerDay() {
         List<String> scores = new ArrayList<String>();
-        DateMidnight dt = new DateMidnight(2013, 11, 29);
+        DateMidnight dt = new DateMidnight(2017, 8, 1);
         while (dt.isBeforeNow()) {
             int createdAt = Ebean.
                     createQuery(Score.class).

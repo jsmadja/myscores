@@ -59,10 +59,6 @@ public class Player extends BaseModel<Player> implements Comparable<Player> {
                 .findUnique();
     }
 
-    public static List<Player> findAll() {
-        return finder.orderBy("name").findList();
-    }
-
     @Override
     public String toString() {
         return name;
@@ -88,7 +84,7 @@ public class Player extends BaseModel<Player> implements Comparable<Player> {
         return id == 1;
     }
 
-    public int computeOneCredit() {
+    private int computeOneCredit() {
         return oneccs().size();
     }
 

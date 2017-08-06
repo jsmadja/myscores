@@ -21,13 +21,4 @@ public class ScoreDecorator {
         return null;
     }
 
-    private String rankSuffix() {
-        if (score.rank == null) {
-            return "";
-        }
-        if (score.rank == 1) {
-            return "ère";
-        }
-        return "ème";
-    }
 }

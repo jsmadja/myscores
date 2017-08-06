@@ -173,16 +173,6 @@ public class Game extends BaseModel<Game> implements Comparable<Game> {
         rankings();
     }
 
-    public String getCoverType() {
-        if (cover.endsWith("jpg") || cover.endsWith("jpeg")) {
-            return "image/jpeg";
-        }
-        if (cover.endsWith("png")) {
-            return "image/png";
-        }
-        return "image/gif";
-    }
-
     public Collection<Player> getPlayers() {
         Set<Player> players = new HashSet<Player>();
         for (Score score : scores) {
