@@ -2,29 +2,16 @@ package models;
 
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.annotation.Where;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.LongNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import controllers.PlayersController;
 import play.db.ebean.Model;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.avaje.ebean.Ebean.find;
-import static com.avaje.ebean.Expr.and;
-import static com.avaje.ebean.Expr.eq;
-import static com.avaje.ebean.Expr.gt;
+import static com.avaje.ebean.Expr.*;
 
 @Entity
 public class Player extends BaseModel<Player> implements Comparable<Player> {
@@ -37,18 +24,12 @@ public class Player extends BaseModel<Player> implements Comparable<Player> {
 
     public Long shmupUserId;
 
-    public boolean hideMedals;
-
     @OneToMany(mappedBy = "player", fetch = FetchType.EAGER)
     @Where(clause = "rank > 0")
     public List<Score> scores = new ArrayList<Score>();
 
     @OneToMany(mappedBy = "player")
     public List<Score> allScores = new ArrayList<Score>();
-
-    public String twitter;
-
-    private boolean vip;
 
     private PlayersController.Counts counts;
 
@@ -67,7 +48,6 @@ public class Player extends BaseModel<Player> implements Comparable<Player> {
                 .findUnique();
         if (player == null) {
             player = new Player(name);
-            player.vip = true;
             player.save();
         }
         return player;
@@ -100,44 +80,12 @@ public class Player extends BaseModel<Player> implements Comparable<Player> {
         return !bestReplayableScores().isEmpty();
     }
 
-    public boolean isVip() {
-        return vip;
-    }
-
     public boolean canImportScores() {
-        return id == 1          // anzymus
-                || id == 6      // yace
-                || id == 42     // mickey
-                || id == 137    // trizeal
-                || id == 705    // Vzurkr
-                || id == 191    // lerebours
-                || id == 7      // SL
-                || id == 231    // MKNIGHT
-                || id == 269    // Yami
-                || id == 30     // shadow gallery
-                || id == 116    // Doudinou
-                || id == 150    // Undef
-                || id == 779    // Kat
-                || id == 159    // Cormano
-                || id == 226    // Radigo
-                || id == 57     // Akaimakai
-                || id == 223    // Guts
-                ;
+        return id == 1;
     }
 
     public boolean isAdministrator() {
         return id == 1;
-    }
-
-    public Score getLastScore() {
-        List<Score> scores = new ArrayList<Score>(this.scores);
-        Collections.sort(scores, new Comparator<Score>() {
-            @Override
-            public int compare(Score o1, Score o2) {
-                return o2.getCreatedAt().compareTo(o1.getCreatedAt());
-            }
-        });
-        return scores.get(0);
     }
 
     public int computeOneCredit() {
@@ -182,52 +130,6 @@ public class Player extends BaseModel<Player> implements Comparable<Player> {
         return this.name.compareToIgnoreCase(p.name);
     }
 
-    public Versus getComparisonWith(Player p) {
-        Versus versus = new Versus(this, p);
-        List<Score> scores = this.scores;
-        for (Score score : scores) {
-            Score comparisonScore = p.getEquivalentScore(score);
-            if (comparisonScore != null) {
-                Versus.Comparison comparison = new Versus.Comparison(score.game, score.difficulty, score.mode, score, comparisonScore);
-                versus.add(comparison);
-            }
-        }
-        return versus;
-    }
-
-    private Score getEquivalentScore(Score reference) {
-        for (Score score : scores) {
-            if (score.game.equals(reference.game)) {
-                if (score.hasMode(reference.mode) && score.hasDifficulty(reference.difficulty)) {
-                    return score;
-                }
-            }
-        }
-        return null;
-    }
-
-    public Versus getBestVersus() {
-        List<Player> all = Player.finder.where().join("scores").findList();
-        all.remove(this);
-        Versus bestVersus = null;
-        for (Player opponent : all) {
-            Versus versus = getComparisonWith(opponent);
-            if (bestVersus == null || bestVersus.loseCount() < versus.loseCount()) {
-                bestVersus = versus;
-            }
-        }
-        return bestVersus;
-    }
-
-    public boolean isUnbeatable() {
-        for (Score score : scores) {
-            if (score.rank > 1) {
-                return false;
-            }
-        }
-        return !scores.isEmpty();
-    }
-
     public List<Score> fetchScores() {
         return Score.finder.
                 where(and(gt("rank", 0), eq("player", this))).
@@ -246,12 +148,5 @@ public class Player extends BaseModel<Player> implements Comparable<Player> {
                 orderBy(game.hasTimerScores() ? "value" : "value desc").
                 where().eq("player", this).eq("game", game).eq("mode", mode).eq("difficulty", difficulty).
                 findUnique();
-    }
-
-    public JsonNode json() {
-        ObjectNode node = new ObjectNode(JsonNodeFactory.instance);
-        node.set("id", new LongNode(id));
-        node.set("name", new TextNode(name));
-        return node;
     }
 }

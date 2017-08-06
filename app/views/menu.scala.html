@@ -32,9 +32,6 @@
                 </li>
                 <li class="@if(page == "players"){active}">
                     <a href="@routes.PlayersController.index"><span class="glyphicon glyphicon-user"></span> @Messages.get("Players")</a></li>
-                <li class="@if(page == "versus"){active}">
-                    <a href="@routes.VersusController.indexChooseVersus(actions.User.current)"><span class="glyphicon glyphicon-transfer"></span> Versus</a>
-                </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li class="@if(page == "stats"){active}"><a href="@routes.StatsController.index" style="border-left: solid 1px #e7e7e7;"><span class="glyphicon glyphicon-stats"></span> @Messages.get("Stats")</a></li>
@@ -42,7 +39,6 @@
                     <li class="@if(page == "new_game"){active}">
                         <a href="@routes.GameController.create"><span class="glyphicon glyphicon-th-large"></span> @Messages.get("AddGame")</a></li>
                 }
-                <li><a href="http://www.shmup.com/index.php?page=doss/Hiscores/hiscores_tuto" target="_blank"><span class="glyphicon glyphicon-question-sign"></span> @Messages.get("Help")</a></li>
                 <li>
                     @if(actions.User.current.isAuthenticated) {
                         <a href="@routes.PlayerController.index(actions.User.current)" style="border-left: solid 1px #e7e7e7;"><span class="glyphicon glyphicon-user"></span> @actions.User.current.name</a>

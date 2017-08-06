@@ -1,10 +1,6 @@
 package models;
 
 import actions.User;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import formatters.ScoreFormatter;
@@ -41,14 +37,12 @@ public class Ranking {
         this.scores = new ArrayList<Score>();
         int rank = 1;
         for (Score score : scores) {
-            if (score.isVip()) {
-                if (score.rank == null) {
-                    score.updateRank(rank);
-                    score.update();
-                }
-                this.scores.add(score);
-                rank++;
+            if (score.rank == null) {
+                score.updateRank(rank);
+                score.update();
             }
+            this.scores.add(score);
+            rank++;
         }
     }
 
@@ -176,16 +170,16 @@ public class Ranking {
             if (score.value.equals(BigDecimal.ZERO)) {
                 return BigDecimal.ZERO;
             }
-		try {
-            GM_log = GM_log.add(BigDecimal.valueOf(Math.log(score.value.doubleValue())));
-}catch(Exception e){
+            try {
+                GM_log = GM_log.add(BigDecimal.valueOf(Math.log(score.value.doubleValue())));
+            } catch (Exception e) {
 // invalid score
-}
+            }
         }
         BigDecimal divisor = BigDecimal.valueOf(scores.size());
         BigDecimal divide = GM_log.divide(divisor, HALF_UP);
         double a = divide.doubleValue();
-        return BigDecimal.valueOf((long)Math.exp(a));
+        return BigDecimal.valueOf((long) Math.exp(a));
     }
 
     public String uniqueKey() {
@@ -198,22 +192,6 @@ public class Ranking {
             modeId = mode.id.toString();
         }
         return difficultyId + "_" + modeId;
-    }
-
-    public JsonNode json() {
-        ObjectNode node = new ObjectNode(JsonNodeFactory.instance);
-        if (difficulty != null) {
-            node.set("difficulty", difficulty.json());
-        }
-        if (mode != null) {
-            node.set("mode", mode.json());
-        }
-        ArrayNode scores = new ArrayNode(JsonNodeFactory.instance);
-        for (Score score : this.scores) {
-            scores.add(score.json());
-        }
-        node.set("scores", scores);
-        return node;
     }
 
     public boolean isNotEmpty() {

@@ -18,9 +18,6 @@
 
     </head>
     <body>
-        @if(actions.User.current.isAuthenticated && !actions.User.current.isVip) {
-            <div id="vip-alert" class="alert alert-warning">@Html(Messages.get("NotVip"))</div>
-        }
         <div class="container">
             <div>
                 @menu(game, page)

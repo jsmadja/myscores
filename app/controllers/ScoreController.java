@@ -4,14 +4,7 @@ import actions.User;
 import com.avaje.ebean.Ebean;
 import com.google.common.base.Predicate;
 import com.google.common.io.Files;
-import models.Difficulty;
-import models.Game;
-import models.Mode;
-import models.Platform;
-import models.Player;
-import models.Score;
-import models.Ship;
-import models.Stage;
+import models.*;
 import org.joda.time.DateTime;
 import play.Logger;
 import play.data.Form;
@@ -26,20 +19,14 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.avaje.ebean.Ebean.find;
 import static com.google.common.collect.Collections2.filter;
 import static java.lang.Integer.parseInt;
 import static java.lang.Long.parseLong;
 import static java.math.RoundingMode.HALF_UP;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.StringUtils.isNumeric;
+import static org.apache.commons.lang3.StringUtils.*;
 import static play.data.Form.form;
 
 public class ScoreController extends Controller {
@@ -84,11 +71,6 @@ public class ScoreController extends Controller {
         if (!files.isEmpty()) {
             if (files.get(0).getKey().equals("photo")) {
                 storePhoto(score, files.get(0));
-            } else {
-                storeInp(score, files.get(0));
-            }
-            if (files.size() > 1) {
-                storeInp(score, files.get(1));
             }
         }
         Score bestScore = score.player.getBestScoreFor(score.game, score.mode, score.difficulty);
@@ -97,9 +79,6 @@ public class ScoreController extends Controller {
             oldRank = bestScore.rank;
         }
         score.save();
-        CacheController.getRankingCache().remove(score.game);
-        CacheController.getSignatureCache().remove(score.player);
-        CacheController.getMedalsCache().remove(score.player);
         score.game.recomputeRankings();
         score.refresh();
 
@@ -119,14 +98,6 @@ public class ScoreController extends Controller {
         score.photo = "http://hiscores.shmup.com" + pathname;
     }
 
-    private static void storeInp(Score score, Http.MultipartFormData.FilePart filePart) throws IOException {
-        File file = filePart.getFile();
-        String filename = filePart.getFilename().replaceAll("[^a-zA-Z0-9.]+", "");
-        String pathname = "/inp/" + new Date().getTime() + "-" + filename;
-        Files.copy(file, new File(pathname));
-        score.inp = "http://hiscores.shmup.com" + pathname;
-    }
-
     public static Result update() throws IOException {
         Form<models.Score> scoreForm = new Form<models.Score>(models.Score.class).bindFromRequest();
         Map<String, String> data = scoreForm.data();
@@ -144,20 +115,11 @@ public class ScoreController extends Controller {
         if (!files.isEmpty()) {
             if (files.get(0).getKey().equals("photo")) {
                 storePhoto(score, files.get(0));
-            } else {
-                storeInp(score, files.get(0));
-            }
-            if (files.size() > 1) {
-                storeInp(score, files.get(1));
             }
         } else {
             score.photo = data.get("oldPhoto");
-            score.inp = data.get("oldInp");
         }
         score.update();
-        CacheController.getRankingCache().remove(score.game);
-        CacheController.getSignatureCache().remove(score.player);
-        CacheController.getMedalsCache().remove(score.player);
         score.game.recomputeRankings();
         return redirect("/");
     }
@@ -288,7 +250,7 @@ public class ScoreController extends Controller {
         }
         Form<models.Score> scoreForm = new Form<models.Score>(models.Score.class).bindFromRequest();
         Map<String, String> data = scoreForm.data();
-        models.Score score = createScore(data, playerName(game, data));
+        models.Score score = createScore(data, data.get("player"));
 
         List<Http.MultipartFormData.FilePart> files = request().body().asMultipartFormData().getFiles();
         if (!files.isEmpty()) {
@@ -296,18 +258,8 @@ public class ScoreController extends Controller {
         }
 
         score.save();
-        CacheController.getRankingCache().remove(game);
-        CacheController.getSignatureCache().remove(score.player);
-        CacheController.getMedalsCache().remove(score.player);
         game.recomputeRankings();
         return ok(score_import.render(game, form(Score.class)));
-    }
-
-    private static String playerName(Game game, Map<String, String> data) {
-        if (game.event == null) {
-            return data.get("player");
-        }
-        return game.event.name + " - " + data.get("player");
     }
 
     public static Result delete() {
@@ -319,9 +271,6 @@ public class ScoreController extends Controller {
         models.Score score = Score.finder.byId(Long.parseLong(data.get("score")));
         score.delete();
         Game game = score.game;
-        CacheController.getRankingCache().remove(game);
-        CacheController.getSignatureCache().remove(score.player);
-        CacheController.getMedalsCache().remove(score.player);
         game.recomputeRankings();
         return ok(score_import.render(game, form(Score.class)));
     }

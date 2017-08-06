@@ -1,9 +1,5 @@
 package models;
 
-import com.fasterxml.jackson.databind.node.BooleanNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import decorators.ScoreDecorator;
 import formatters.ScoreFormatter;
 import org.joda.time.DateTime;
@@ -14,9 +10,6 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 import java.math.BigDecimal;
-
-import static java.text.MessageFormat.format;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Entity
 public class Score extends BaseModel<Score> implements Comparable<Score> {
@@ -48,7 +41,6 @@ public class Score extends BaseModel<Score> implements Comparable<Score> {
     public String comment;
 
     public String photo;
-    public String inp;
 
     public String replay;
 
@@ -238,17 +230,6 @@ public class Score extends BaseModel<Score> implements Comparable<Score> {
         this.rank = rank;
     }
 
-    public String tweet() {
-        return format("{3} - {1} pts - {4} - {2}{5} - {0} {6}", formattedRank(), formattedValue(), player.name, game.title, (modeName() + " " + difficultyName()).trim(), twitterAccount(), "hiscores.shmup.com/game/" + game.id + "/" + game.getEscapedTitle());
-    }
-
-    private String twitterAccount() {
-        if (player.twitter != null) {
-            return " (" + player.twitter + ")";
-        }
-        return "";
-    }
-
     public String difficultyName() {
         return difficulty == null ? "" : difficulty.name;
     }
@@ -263,10 +244,6 @@ public class Score extends BaseModel<Score> implements Comparable<Score> {
 
     public void setRank(int rank) {
         this.rank = rank;
-    }
-
-    public boolean isVip() {
-        return player.isVip();
     }
 
     public boolean is1CC() {
@@ -323,33 +300,4 @@ public class Score extends BaseModel<Score> implements Comparable<Score> {
         return this.mode != null && this.mode.isTimerScore();
     }
 
-    public ObjectNode json() {
-        ObjectNode scoreNode = new ObjectNode(JsonNodeFactory.instance);
-        scoreNode.set("player", player.json());
-        scoreNode.set("game", game.json());
-        scoreNode.set("platform", platform.json());
-        if (mode != null) {
-            scoreNode.set("mode", mode.json());
-        }
-        scoreNode.set("stage", stage.json());
-        if (ship != null) {
-            scoreNode.set("ship", ship.json());
-        }
-        if (difficulty != null) {
-            scoreNode.set("difficulty", difficulty.json());
-        }
-        scoreNode.set("value", new TextNode(formattedValue()));
-        scoreNode.set("rank", new TextNode(formattedRank()));
-        if (onecc) {
-            scoreNode.set("1cc", BooleanNode.TRUE);
-        }
-        scoreNode.set("date", new TextNode(formattedDateInFrench()));
-        if (replay != null && isNotBlank(replay)) {
-            scoreNode.set("replay", new TextNode(replay));
-        }
-        if (photo != null && isNotBlank(photo)) {
-            scoreNode.set("photo", new TextNode(photo));
-        }
-        return scoreNode;
-    }
 }

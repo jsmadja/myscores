@@ -153,11 +153,6 @@
                             </script>
                         </a>
                     }
-                    @if(score.inp) {
-                        <a href="@score.inp" class="label label-primary pull-left" style="margin-right : 5px;">
-                            INP
-                        </a>
-                    }
                     @if(score.replay) {
                         <a href="@score.replay" target="_blank" class="label label-primary pull-left" style="margin-right : 5px;">
                             <span class="glyphicon glyphicon-play"></span>
@@ -206,15 +201,9 @@
             <a href="@game.thread" class="btn btn-default btn-lg btn-xs">
                 <span class="glyphicon glyphicon-share-alt"></span> forum
             </a>
-            <a href="@routes.RankingController.index(game)" target="_blank" class="btn btn-default btn-lg btn-xs">
-                <span class="glyphicon glyphicon-list-alt"></span> ranking
-            </a>
             @if(actions.User.current().canImportScores) {
                 <a href="@routes.ScoreController.importScores(game)" class="btn btn-default btn-lg btn-xs">
                     <span class="glyphicon glyphicon-download-alt"></span> import
-                </a>
-                <a href="@routes.GameController.createEventOf(game)" class="btn btn-default btn-lg btn-xs">
-                    <span class="glyphicon glyphicon-glass"></span> event
                 </a>
             }
             @if(actions.User.current().isAdministrator) {

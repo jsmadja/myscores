@@ -14,9 +14,6 @@
                 <a href="@score.game.thread" class="btn btn-default btn-lg btn-xs">
                     <span class="glyphicon glyphicon-share-alt"></span> forum
                 </a>
-                <a href="@routes.RankingController.index(score.game)" target="_blank" class="btn btn-default btn-lg btn-xs">
-                    <span class="glyphicon glyphicon-list-alt"></span> ranking
-                </a>
             </p>
         </h2>
 
@@ -29,7 +26,6 @@
             }
             <input type="hidden" name="scoreId" value="@score.id" />
             <input type="hidden" name="oldPhoto" value="@score.photo" />
-            <input type="hidden" name="oldInp" value="@score.inp" />
             <div class="row">
                 <div class="col-md-4">
                     <div class="form-group">
@@ -125,14 +121,6 @@
                         <label for="photo">@Messages.get("Photo")</label>
                         <span class="btn btn-primary btn-default btn-file form-control" style="text-align: left;">
                             Ajouter une photo <input type="file" name="photo">
-                        </span>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label for="inp">@Messages.get("Inp")</label>
-                        <span class="btn btn-success btn-default btn-file form-control" style="text-align: left;">
-                            Ajouter un INP <input type="file" name="inp">
                         </span>
                     </div>
                 </div>

@@ -2,33 +2,18 @@ package models;
 
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.annotation.Where;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.LongNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.google.common.base.Predicate;
 import org.apache.commons.collections.map.MultiKeyMap;
 import play.db.ebean.Model;
 
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.avaje.ebean.Expr.eq;
-import static com.fasterxml.jackson.databind.node.JsonNodeFactory.instance;
 import static com.google.common.collect.Collections2.filter;
-import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.CascadeType.PERSIST;
 
 @Entity
@@ -72,9 +57,6 @@ public class Game extends BaseModel<Game> implements Comparable<Game> {
     @OrderBy("sortOrder")
     @OneToMany(mappedBy = "game", cascade = PERSIST)
     public List<Stage> stages;
-
-    @OneToOne(mappedBy = "game", cascade = ALL)
-    public Event event;
 
     private boolean generalRanking;
 
@@ -157,9 +139,6 @@ public class Game extends BaseModel<Game> implements Comparable<Game> {
             @Override
             public boolean apply(@Nullable Score score) {
                 if (players.contains(score.player)) {
-                    return false;
-                }
-                if (!score.player.isVip()) {
                     return false;
                 }
                 players.add(score.player);
@@ -276,82 +255,5 @@ public class Game extends BaseModel<Game> implements Comparable<Game> {
             }
         });
         return scores;
-    }
-
-    public ObjectNode json() {
-        ObjectNode node = new ObjectNode(instance);
-        node.set("id", new LongNode(id));
-        node.set("title", new TextNode(title));
-        node.set("cover", new TextNode(cover));
-        return node;
-    }
-
-    public JsonNode jsonDetail() {
-        ObjectNode json = json();
-        json.set("platforms", jsonPlatforms());
-        json.set("stages", jsonStages());
-        json.set("modes", jsonModes());
-        json.set("difficulties", jsonDifficulties());
-        json.set("ships", jsonShips());
-        json.set("rankings", jsonRankings());
-        return json;
-    }
-
-    private ArrayNode jsonRankings() {
-        ArrayNode nodes = new ArrayNode(instance);
-        for (Ranking item : rankings()) {
-            if (item.isNotEmpty()) {
-                nodes.add(item.json());
-            }
-        }
-        return nodes;
-    }
-
-    private ArrayNode jsonStages() {
-        ArrayNode nodes = new ArrayNode(instance);
-        for (Stage item : stages) {
-            nodes.add(item.json());
-        }
-        return nodes;
-    }
-
-    private ArrayNode jsonPlatforms() {
-        ArrayNode nodes = new ArrayNode(instance);
-        for (Platform item : platforms) {
-            nodes.add(item.json());
-        }
-        return nodes;
-    }
-
-    private ArrayNode jsonModes() {
-        ArrayNode nodes = new ArrayNode(instance);
-        for (Mode item : modes) {
-            nodes.add(item.json());
-        }
-        return nodes;
-    }
-
-    private ArrayNode jsonDifficulties() {
-        ArrayNode nodes = new ArrayNode(instance);
-        for (Difficulty item : difficulties) {
-            nodes.add(item.json());
-        }
-        return nodes;
-    }
-
-    private ArrayNode jsonShips() {
-        ArrayNode nodes = new ArrayNode(instance);
-        for (Ship item : ships) {
-            nodes.add(item.json());
-        }
-        return nodes;
-    }
-
-    public boolean hasStages() {
-        return stages != null && !stages.isEmpty();
-    }
-
-    public boolean hasPlatforms() {
-        return platforms != null && !platforms.isEmpty();
     }
 }
